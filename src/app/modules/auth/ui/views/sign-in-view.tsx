@@ -2,7 +2,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useRouter } from "next/navigation";
 import { OctagonAlert } from "lucide-react";
+import { FaGoogle, FaGithub } from "react-icons/fa";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -19,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1, { message: "Password is Required" }),
@@ -37,15 +38,32 @@ export const SignInView = () => {
   });
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     setError(null);
-
+    setPending(true);
     authClient.signIn.email(
       {
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
+          setPending(false);
           router.push("/");
+        },
+        onError: ({ error }) => {
+          setError(error.message);
+          setPending(false);
+        },
+      }
+    );
+  };
+  const onSocial = (provider: "google" | "github") => {
+    setError(null);
+    setPending(true);
+    authClient.signIn.social(
+      { provider: provider, callbackURL: "/" },
+      {
+        onSuccess: () => {
           setPending(false);
         },
         onError: ({ error }) => {
@@ -126,16 +144,18 @@ export const SignInView = () => {
                     type="button"
                     className="w-full"
                     disabled={pending}
+                    onClick={() => onSocial("google")}
                   >
-                    Google
+                    <FaGoogle />
                   </Button>
                   <Button
                     variant={"outline"}
                     type="button"
                     className="w-full"
                     disabled={pending}
+                    onClick={() => onSocial("github")}
                   >
-                    Google
+                    <FaGithub />
                   </Button>
                 </div>
                 <div className="text-center text-sm">
