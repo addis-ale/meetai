@@ -1,7 +1,7 @@
+import { eq, getTableColumns, sql } from "drizzle-orm";
+import { z } from "zod";
 import { db } from "@/db";
 import { agents } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { agentsInsertSchema } from "../schemas";
 export const agentsRouter = createTRPCRouter({
@@ -14,14 +14,17 @@ export const agentsRouter = createTRPCRouter({
     )
     .query(async ({ input }) => {
       const [existingAgent] = await db
-        .select()
+        .select({ meetingCount: sql<number>`5`, ...getTableColumns(agents) })
         .from(agents)
         .where(eq(agents.id, input.id));
+      console.log("existing Agent", existingAgent);
       return existingAgent;
     }),
   // TODO: change getmany to use protectedProcedure
   getMany: protectedProcedure.query(async () => {
-    const data = await db.select().from(agents);
+    const data = await db
+      .select({ meetingCount: sql<number>`5`, ...getTableColumns(agents) })
+      .from(agents);
     return data;
   }),
   create: protectedProcedure

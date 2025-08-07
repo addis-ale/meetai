@@ -10,7 +10,7 @@ import {
   AgentsViewLoading,
 } from "@/app/modules/agents/ui/view/agents-view";
 import { ErrorBoundary } from "react-error-boundary";
-import { ListHeader } from "@/app/modules/agents/ui/view/components/listHeader";
+import { ListHeader } from "@/app/modules/agents/ui/components/listHeader";
 const AgentsPage = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),

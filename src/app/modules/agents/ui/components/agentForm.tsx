@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useTRPC } from "@/trpc/client";
-import { AgentGetOne } from "../../../types";
-import { agentsInsertSchema } from "../../../schemas";
+import { AgentGetOne } from "../../types";
+import { agentsInsertSchema } from "../../schemas";
 import {
   Form,
   FormControl,
