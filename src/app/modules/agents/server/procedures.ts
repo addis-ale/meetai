@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { and, count, desc, eq, getTableColumns, ilike, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
@@ -18,12 +19,16 @@ export const agentsRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
       const [existingAgent] = await db
         .select({ meetingCount: sql<number>`5`, ...getTableColumns(agents) })
         .from(agents)
-        .where(eq(agents.id, input.id));
-      console.log("existing Agent", existingAgent);
+        .where(
+          and(eq(agents.id, input.id), eq(agents.userId, ctx.auth.user.id))
+        );
+      if (!existingAgent) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found" });
+      }
       return existingAgent;
     }),
   // TODO: change getmany to use protectedProcedure

@@ -1,4 +1,5 @@
 "use client";
+import { useRouter } from "next/navigation";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ErrorState } from "@/components/errorState";
 import { LoadingState } from "@/components/loadingState";
@@ -10,6 +11,7 @@ import { useAgentsFilters } from "../../hooks/use-agents-filters";
 import { DataPagination } from "../components/dataPagination";
 
 export const AgentsView = () => {
+  const router = useRouter();
   const [filters, setFilters] = useAgentsFilters();
   const trpc = useTRPC();
   const { data } = useSuspenseQuery(
@@ -17,7 +19,11 @@ export const AgentsView = () => {
   );
   return (
     <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-      <DataTable columns={columns} data={data.items} />
+      <DataTable
+        onRowClick={(row) => router.push(`/agents/${row.id}`)}
+        columns={columns}
+        data={data.items}
+      />
       <DataPagination
         page={filters.page}
         totalPages={data.totalPages}
@@ -41,5 +47,10 @@ export const AgentsViewLoading = () => {
   );
 };
 export const AgentsViewError = () => {
-  return <ErrorState title="" description="" />;
+  return (
+    <ErrorState
+      title="Error Loading Agents"
+      description="Something went wrong please try again..."
+    />
+  );
 };
