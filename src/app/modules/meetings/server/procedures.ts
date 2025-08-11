@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { and, count, desc, eq, ilike } from "drizzle-orm";
+import { and, count, desc, eq, getTableColumns, ilike } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 import { meetings } from "@/db/schema";
 import { db } from "@/db";
@@ -10,18 +10,37 @@ import {
   MAX_PAGE_SIZE,
   MIN_PAGE_SIZE,
 } from "@/constants";
+import { meetingsInsertSchema, meetingsUpdateSchema } from "../schemas";
 export const meetingsRouter = createTRPCRouter({
+  update: protectedProcedure
+    .input(meetingsUpdateSchema)
+    .mutation(async ({ input, ctx }) => {
+      const [updated] = await db
+        .update(meetings)
+        .set(input)
+        .where(
+          and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id))
+        )
+        .returning();
+      if (!updated) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Meeting not found",
+        });
+      }
+      return updated;
+    }),
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const [existingMeeting] = await db
-        .select()
+        .select({ ...getTableColumns(meetings) })
         .from(meetings)
         .where(
           and(eq(meetings.id, input.id), eq(meetings.userId, ctx.auth.user.id))
         );
       if (!existingMeeting) {
-        return new TRPCError({
+        throw new TRPCError({
           code: "NOT_FOUND",
           message: "Meeting not found",
         });
@@ -67,5 +86,18 @@ export const meetingsRouter = createTRPCRouter({
         );
       const totalPage = Math.ceil(total.count / pageSize);
       return { item: data, total: total.count, totalPages: totalPage };
+    }),
+  create: protectedProcedure
+    .input(meetingsInsertSchema)
+    .mutation(async ({ input, ctx }) => {
+      const [createdMeeting] = await db
+        .insert(meetings)
+        .values({
+          ...input,
+          userId: ctx.auth.user.id,
+        })
+        .returning();
+      //TODO: Create Stream Call, Upsert stream users
+      return createdMeeting;
     }),
 });
