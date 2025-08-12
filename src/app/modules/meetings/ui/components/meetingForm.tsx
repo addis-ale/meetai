@@ -16,8 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { meetingsInsertSchema } from "../../../schemas";
-import { MeetingGetOne } from "../../../types";
+import { meetingsInsertSchema } from "../../schemas";
+import { MeetingGetOne } from "../../types";
 import { CommandSelect } from "@/components/command-select";
 import { GeneratedAvatar } from "@/components/generatedAvatar";
 import { NewAgentDialog } from "@/app/modules/agents/ui/components/newAgentDialog";
