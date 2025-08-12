@@ -10,7 +10,7 @@ import {
 } from "@/app/modules/meetings/ui/views/meeting-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { auth } from "@/lib/auth";
-import { MeetingsListHeader } from "@/app/modules/meetings/ui/views/components/meetingListHeader";
+import { MeetingsListHeader } from "@/app/modules/meetings/ui/components/meetingListHeader";
 
 const MeeetingsPage = async () => {
   const session = await auth.api.getSession({
