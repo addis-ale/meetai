@@ -5,11 +5,11 @@ import { ErrorState } from "@/components/errorState";
 import { LoadingState } from "@/components/loadingState";
 import { useTRPC } from "@/trpc/client";
 
-import { columns } from "../components/columns";
-import { EmptyState } from "@/components/emptyState";
-import { useAgentsFilters } from "../../hooks/use-agents-filters";
-import { DataPagination } from "../components/dataPagination";
+import { DataPagination } from "@/components/dataPagination";
 import { DataTable } from "@/components/data-table";
+import { EmptyState } from "@/components/emptyState";
+import { columns } from "../components/columns";
+import { useAgentsFilters } from "../../hooks/use-agents-filters";
 
 export const AgentsView = () => {
   const router = useRouter();
