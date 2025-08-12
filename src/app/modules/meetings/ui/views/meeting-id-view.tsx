@@ -14,6 +14,10 @@ import { useTRPC } from "@/trpc/client";
 import { MeetingIdViewHeader } from "../components/meetingIdViewHeader";
 import { useConfirm } from "@/hooks/use-confirm";
 import { UpdateMeetingDialog } from "../components/updateMeetingDialog";
+import { UpcomingState } from "../components/upcomingState";
+import { ActiveState } from "../components/activeState";
+import { CancelledState } from "../components/cancelledState";
+import { ProcessingState } from "../components/processingState";
 
 interface Props {
   meetingId: string;
@@ -51,6 +55,11 @@ export const MeetingIdView = ({ meetingId }: Props) => {
     if (!ok) return;
     await removeMeeting.mutateAsync({ id: meetingId });
   };
+  const isActive = data.status === "active";
+  const isUpcoming = data.status === "upcoming";
+  const isCancelled = data.status === "cancelled";
+  const isCompleted = data.status === "completed";
+  const isProcessing = data.status === "processing";
   return (
     <>
       <RemoveConfirmation />
@@ -66,7 +75,17 @@ export const MeetingIdView = ({ meetingId }: Props) => {
           onRemove={handleRemoveMeeting}
           meetingName={data.name}
         />
-        {JSON.stringify(data, null, 2)}
+        {isCancelled && <CancelledState />}
+        {isProcessing && <ProcessingState />}
+        {isCompleted && <div>Completed</div>}
+        {isActive && <ActiveState meetingId={meetingId} />}
+        {isUpcoming && (
+          <UpcomingState
+            meetingId={meetingId}
+            isCancelling={false}
+            onCancelMeeting={() => {}}
+          />
+        )}
       </div>
     </>
   );
