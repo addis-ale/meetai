@@ -17,7 +17,7 @@ const Page = async ({ params }: Props) => {
     headers: await headers(),
   });
   if (!session) {
-    redirect("sign-in");
+    redirect("/sign-in");
   }
   const { meetingId } = await params;
   const queryClient = getQueryClient();
